@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andrew Neal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAF9F6;
+    --ink: #1B1F23;
+    --pine: #2F5233;
+    --pine-light: #3E6B45;
+    --slate: #8A8577;
+    --gold: #C9A227;
+    --line: #DEDAD0;
+    --max: 680px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  a { color: var(--pine); text-decoration: none; border-bottom: 1px solid var(--line); }
+  a:hover { border-bottom-color: var(--pine); }
+  a:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -48px;
+    padding: 8px 12px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    z-index: 20;
+  }
+  .skip-link:focus { top: 16px; }
+
+  .wrap {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- NAV ---------- */
+  nav.index {
+    position: sticky;
+    top: 0;
+    background: rgba(250,249,246,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    z-index: 10;
+  }
+  nav.index .wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  nav.index .name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    color: var(--ink);
+  }
+  nav.index ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+  }
+  nav.index ul a {
+    border: none;
+    color: var(--slate);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  nav.index ul a:hover { color: var(--pine); }
+  .edit-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .edit-button {
+    border: 1px solid var(--pine);
+    border-radius: 3px;
+    padding: 8px 12px;
+    background: var(--pine);
+    color: var(--paper);
+    font: 500 13px 'IBM Plex Mono', monospace;
+    cursor: pointer;
+  }
+  .edit-button.secondary {
+    background: transparent;
+    color: var(--pine);
+  }
+  .edit-button:hover { background: var(--pine-light); }
+  .edit-button.secondary:hover { background: #e8e4da; }
+  .edit-status {
+    color: var(--slate);
+    font-size: 13px;
+  }
+  [data-editable][contenteditable="true"] {
+    outline: 2px dashed var(--gold);
+    outline-offset: 4px;
+    background: rgba(201, 162, 39, 0.08);
+  }
+  @media (max-width: 560px) {
+    nav.index ul { gap: 12px; }
+    nav.index ul li:nth-child(4), nav.index ul li:nth-child(5), nav.index ul li:nth-child(6) { display: none; }
+  }
+  @media (max-width: 380px) {
+    nav.index .wrap { align-items: flex-start; }
+    nav.index ul { gap: 8px; font-size: 12px; }
+    nav.index .name { font-size: 15px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  /* ---------- HERO ---------- */
+  header.hero {
+    padding: 72px 0 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.hero h1 {
+    font-size: 40px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    max-width: 560px;
+  }
+  header.hero p.sub {
+    font-size: 17px;
+    color: var(--slate);
+    margin-top: 16px;
+    max-width: 520px;
+  }
+
+  .ticker {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .ticker .cell {
+    flex: 1 1 auto;
+    min-width: 140px;
+    padding: 14px 16px;
+    border-right: 1px solid var(--line);
+  }
+  .ticker .cell:last-child { border-right: none; }
+  .ticker .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .ticker .value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    color: var(--pine);
+    margin-top: 4px;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+  }
+
+  section h2 {
+    font-size: 26px;
+    margin-top: 6px;
+    margin-bottom: 20px;
+  }
+
+  section p { margin: 0 0 14px; }
+
+  .fill {
+    background: #F1EEE6;
+    border: 1px dashed var(--slate);
+    border-radius: 4px;
+    padding: 14px 16px;
+    color: var(--slate);
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  /* ---------- EXPERIENCE / EDU BLOCKS ---------- */
+  .entry {
+    margin-bottom: 28px;
+  }
+  .entry:last-child { margin-bottom: 0; }
+  .entry-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+  .entry-top .role {
+    font-weight: 600;
+    font-size: 17px;
+  }
+  .entry-top .dates {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--slate);
+  }
+  .entry .org {
+    color: var(--pine);
+    font-size: 15px;
+    margin-top: 2px;
+  }
+  .entry ul {
+    margin: 10px 0 0;
+    padding-left: 18px;
+  }
+  .entry li { margin-bottom: 6px; }
+
+  /* ---------- MARKET NOTES ---------- */
+  .note {
+    border-left: 2px solid var(--pine);
+    padding: 4px 0 4px 16px;
+    margin-bottom: 20px;
+  }
+  .note .date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--slate);
+  }
+
+  .reading-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .reading-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .reading-list li:last-child { border-bottom: none; }
+  .reading-list .title { font-weight: 600; }
+  .reading-list .note-text { color: var(--slate); font-size: 15px; }
+
+  /* ---------- AWARDS ---------- */
+  .award-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--pine);
+    border: 1px solid var(--pine);
+    border-radius: 3px;
+    padding: 2px 8px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    padding: 48px 0 72px;
+    text-align: left;
+  }
+  footer .contact-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  footer p.small {
+    color: var(--slate);
+    font-size: 13px;
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<nav class="index" aria-label="Primary navigation">
+  <div class="wrap">
+    <span class="name">ANDREW NEAL</span>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#markets">Markets</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#awards">Awards</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="main-content">
+<header class="hero">
+  <div class="wrap">
+    <h1 data-editable>Andrew Neal is learning how capital actually gets allocated — in the classroom, in Milan, and on his own time.</h1>
+    <p class="sub" data-editable>Finance &amp; Economics student at Wofford College. Cary, NC.</p>
+
+    <div class="ticker">
+      <div class="cell">
+        <div class="label">GPA</div>
+        <div class="value" data-editable>3.76</div>
+      </div>
+      <div class="cell">
+        <div class="label">Golf Stroke Avg</div>
+        <div class="value" data-editable>73.43</div>
+      </div>
+      <div class="cell">
+        <div class="label">Tournaments</div>
+        <div class="value" data-editable>10</div>
+      </div>
+      <div class="cell">
+        <div class="label">Study Abroad</div>
+        <div class="value" data-editable>Milan, IT</div>
+      </div>
+    </div>
+    <div class="edit-controls" aria-live="polite">
+      <button class="edit-button" id="edit-page" type="button">Edit page</button>
+      <button class="edit-button secondary" id="reset-page" type="button" hidden>Reset saved edits</button>
+      <span class="edit-status" id="edit-status">Your edits stay in this browser.</span>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="eyebrow">01 — About</div>
+    <h2 data-editable>Why finance</h2>
+    <div class="fill" data-editable>
+      [Write 3–4 sentences here in your own voice: what pulled you toward finance and economics specifically, what the Bocconi/Milan program changed about how you think about markets, and what kind of work you want to do next. Be specific — mention the Mercado Bitcoin IPO project or the Banca Generali advisory work if it shaped your thinking. Avoid generic lines like "I've always been passionate about finance" — say what you actually noticed or got curious about.]
+    </div>
+  </div>
+</section>
+
+<section id="markets">
+  <div class="wrap">
+    <div class="eyebrow">02 — Markets</div>
+    <h2 data-editable>What I'm paying attention to</h2>
+
+    <h3 style="font-size:17px; margin-bottom:12px; font-family:'IBM Plex Sans',sans-serif; font-weight:600;">Market notes</h3>
+    <div class="note">
+      <div class="date" data-editable>[Month Year]</div>
+      <p data-editable>[2–4 sentences reacting to something real you noticed in markets recently — a Fed decision, an earnings call, a deal in the news, something from Real Estate Finance Club. Keep it short and honest, not polished. This section should be the newest thing on the page, so update it often.]</p>
+    </div>
+    <div class="note">
+      <div class="date" data-editable>[Month Year]</div>
+      <p data-editable>[Second entry. Doesn't need to be deep — it needs to be yours and recent.]</p>
+    </div>
+
+    <h3 style="font-size:17px; margin:32px 0 12px; font-family:'IBM Plex Sans',sans-serif; font-weight:600;">One company I've actually looked into</h3>
+    <div class="fill" data-editable>
+      [This is the highest-impact section on the page. Pick one company you understand — maybe something adjacent to retail, hospitality, or real estate given your work experience — and write a short thesis: what the business does, why you think it's under- or over-valued, and what would prove you wrong. One page is plenty. This shows independent analytical thinking, which is exactly what Recalc's technical training is built around.]
+    </div>
+
+    <h3 style="font-size:17px; margin:32px 0 12px; font-family:'IBM Plex Sans',sans-serif; font-weight:600;">What I'm reading</h3>
+    <ul class="reading-list">
+      <li>
+        <div class="title" data-editable>[Book / newsletter / podcast title]</div>
+        <div class="note-text" data-editable>[One sentence on what you took from it]</div>
+      </li>
+      <li>
+        <div class="title" data-editable>[Title]</div>
+        <div class="note-text" data-editable>[One sentence]</div>
+      </li>
+      <li>
+        <div class="title" data-editable>[Title]</div>
+        <div class="note-text" data-editable>[One sentence]</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="eyebrow">03 — Experience</div>
+    <h2 data-editable>Work &amp; involvement</h2>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>Sales Associate</span>
+        <span class="dates" data-editable>Sept 2025 – Present</span>
+      </div>
+      <div class="org" data-editable>Gentleman's Corner</div>
+      <ul>
+        <li data-editable>Advise clients on high-end apparel and styling choices, turning browsing into purchases through outfit recommendations</li>
+        <li data-editable>Own the full sales cycle end-to-end — transactions, order tracking, payment handling, exchanges — with accuracy even during high-traffic periods</li>
+        <li data-editable>Built a loyal client base through consistent follow-up, resulting in a strong repeat-customer rate</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>Restaurant Server</span>
+        <span class="dates" data-editable>Dec 2022 – Jul 2025</span>
+      </div>
+      <div class="org" data-editable>Kabuki Japanese Steakhouse</div>
+      <ul>
+        <li data-editable>Served 50+ guests per shift, coordinating with kitchen staff to keep service smooth under pressure</li>
+        <li data-editable>Processed daily cash and card transactions, reconciling receipts each shift</li>
+        <li data-editable>Trained new servers on systems and service standards to keep the team consistent</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>Team Member, NCAA Division I Golf</span>
+        <span class="dates" data-editable>Aug 2025 – Present</span>
+      </div>
+      <div class="org" data-editable>Wofford College Athletics</div>
+      <ul>
+        <li data-editable>Only player to compete in every collegiate event this year — a 73.43 stroke average across 30 rounds and 10 tournaments</li>
+        <li data-editable>Balanced a national travel schedule with a full academic courseload, earning Southern Conference Academic Honor Roll and Dean's List every semester</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>Analyst</span>
+        <span class="dates" data-editable>Apr 2026 – Present</span>
+      </div>
+      <div class="org" data-editable>Wofford Real Estate Finance Club</div>
+      <ul>
+        <li data-editable>Analyze financial performance, market trends, and industry conditions across commercial development case studies</li>
+        <li data-editable>Collaborate in small groups to evaluate real estate markets and identify potential investment opportunities</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>Member</span>
+        <span class="dates" data-editable>Sept 2025 – Present</span>
+      </div>
+      <div class="org" data-editable>Tri Beta National Biological Honor Society</div>
+      <ul>
+        <li data-editable>Explore the business side of healthcare through conversations with physicians and private practice owners on overhead, staffing, and expansion decisions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="wrap">
+    <div class="eyebrow">04 — Education</div>
+    <h2 data-editable>School &amp; study abroad</h2>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>B.S. Finance &amp; B.S. Economics</span>
+        <span class="dates" data-editable>Aug 2025 – May 2029</span>
+      </div>
+      <div class="org" data-editable>Wofford College, Spartanburg, SC — GPA 3.76/4.00</div>
+      <p data-editable style="margin-top:10px; font-size:15px; color:var(--slate);">Wall Street Prep Equities Markets Certification Program</p>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>International Financial Markets &amp; Investments</span>
+        <span class="dates" data-editable>May 2026 – Aug 2026</span>
+      </div>
+      <div class="org" data-editable>Bocconi University &amp; IES Milan Study Abroad Program</div>
+      <ul>
+        <li data-editable>Studied global capital markets through site visits to Banca Profilo and the Italian Stock Exchange; led team analysis of a family's financial profile presented to Banca Generali's Investment Advisory Team</li>
+        <li data-editable>Engaged with guest speakers from UBS, Klarna, and Bank of Italy on PE/VC deal-making and financing strategy</li>
+        <li data-editable>Evaluated Mercado Bitcoin's potential IPO as a funding path and presented findings to an audience of 100+</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="awards">
+  <div class="wrap">
+    <div class="eyebrow">05 — Honors</div>
+    <h2 data-editable>Awards</h2>
+    <div class="entry">
+      <div class="entry-top">
+        <span class="role" data-editable>Tom Suiter Extra Effort Award Winner</span>
+        <span class="dates" data-editable>Feb 2025</span>
+      </div>
+      <div class="org" data-editable>WRAL-TV</div>
+      <p data-editable style="margin-top:10px;">Selected as WRAL's honoree for excelling in sports, maintaining strong grades, and giving back to the community.</p>
+      <div style="margin-top:12px;">
+        <span class="award-badge" data-editable>3x State Champion — Golf</span>
+        <span class="award-badge" data-editable>NCISAA 3A Player of the Year, 2024 &amp; 2025</span>
+        <span class="award-badge" data-editable>1,700+ Career Points — Basketball</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="eyebrow">06 — Contact</div>
+    <h2 data-editable>Get in touch</h2>
+    <div class="contact-row">
+      <a href="mailto:nealad@wofford.edu" data-editable>nealad@wofford.edu</a>
+      <a href="tel:9199719992" data-editable>(919) 971-9992</a>
+      <a href="https://www.linkedin.com/in/andrewdneal1" target="_blank" rel="noopener" data-editable>LinkedIn</a>
+    </div>
+    <p class="small" data-editable>Cary, NC · Wofford College, Class of 2029</p>
+  </div>
+</footer>
+
+<script>
+  (() => {
+    const storageKey = 'andrew-neal-portfolio-edits';
+    const editButton = document.querySelector('#edit-page');
+    const resetButton = document.querySelector('#reset-page');
+    const status = document.querySelector('#edit-status');
+    const editableElements = [...document.querySelectorAll('[data-editable]')];
+    const originalContent = editableElements.map((element) => element.innerHTML);
+
+    const setEditing = (editing) => {
+      editableElements.forEach((element) => {
+        element.contentEditable = editing;
+        element.spellcheck = editing;
+      });
+      editButton.textContent = editing ? 'Save changes' : 'Edit page';
+      resetButton.hidden = editing;
+      status.textContent = editing
+        ? 'Click any highlighted text to edit it.'
+        : 'Your edits stay in this browser.';
+    };
+
+    const saveEdits = () => {
+      localStorage.setItem(storageKey, JSON.stringify(
+        editableElements.map((element) => element.innerHTML)
+      ));
+      setEditing(false);
+      resetButton.hidden = false;
+      status.textContent = 'Changes saved in this browser.';
+    };
+
+    const restoreEdits = () => {
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return;
+      try {
+        const content = JSON.parse(saved);
+        if (!Array.isArray(content) || content.length !== editableElements.length) {
+          throw new Error('Saved edits do not match this page.');
+        }
+        editableElements.forEach((element, index) => {
+          element.innerHTML = content[index];
+        });
+        resetButton.hidden = false;
+      } catch (error) {
+        localStorage.removeItem(storageKey);
+        status.textContent = 'Saved edits could not be loaded; showing the original page.';
+        console.error(error);
+      }
+    };
+
+    editButton.addEventListener('click', () => {
+      if (editButton.textContent === 'Save changes') {
+        saveEdits();
+      } else {
+        setEditing(true);
+      }
+    });
+
+    resetButton.addEventListener('click', () => {
+      editableElements.forEach((element, index) => {
+        element.innerHTML = originalContent[index];
+      });
+      localStorage.removeItem(storageKey);
+      setEditing(false);
+      resetButton.hidden = true;
+      status.textContent = 'Saved edits reset.';
+    });
+
+    restoreEdits();
+  })();
+</script>
+
+</body>
+</html>
